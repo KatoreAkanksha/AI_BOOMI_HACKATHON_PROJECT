@@ -86,4 +86,11 @@ Serenity Path is designed with a **Privacy-First** approach. Voice recordings ar
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
-*Developed with ❤️ for Mental Wellness.*
+*Developed by
+## 👩‍💻👨‍💻 Developer Work Distribution
+
+| Developer Name | Key Responsibilities |
+|---------------|----------------------|
+| **Akanksha** | Frontend development (React + UI/UX), Dashboard design & emotion visualizations, User experience flow, Presentation & documentation |
+| **Madhav** | Backend development (Node.js, Express), SQLite database design, Authentication (JWT), ML integration (voice emotion analysis & music recommendation logic) |
+
