@@ -1,0 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Vision UI Dark Theme - Consistent with Welcome Page */
+    --background: 228 66% 13%; /* #0B1437 */
+    --foreground: 0 0% 100%;
+
+    --card: 228 60% 18%; /* #111C44 */
+    --card-foreground: 0 0% 100%;
+
+    --popover: 228 60% 18%;
+    --popover-foreground: 0 0% 100%;
+
+    /* Neon Blue Primary */
+    --primary: 212 100% 50%; /* #0075FF */
+    --primary-foreground: 0 0% 100%;
+
+    /* Cyan Secondary/Accent */
+    --secondary: 188 100% 50%; /* #00E0FF */
+    --secondary-foreground: 228 66% 13%;
+
+    --muted: 228 40% 25%;
+    --muted-foreground: 220 15% 75%;
+
+    /* Purple Accent */
+    --accent: 270 100% 64%; /* #A020F0 or similar */
+    --accent-foreground: 0 0% 100%;
+
+    --highlight: 188 100% 50%;
+    --highlight-foreground: 228 66% 13%;
+
+    --warm: 35 100% 60%;
+    --warm-foreground: 35 100% 10%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 228 50% 25%;
+    --input: 228 50% 25%;
+    --ring: 212 100% 50%;
+
+    --radius: 1.25rem;
+
+    /* Vision UI Gradients */
+    --gradient-calm: linear-gradient(135deg, #0075FF 0%, #00E0FF 100%);
+    --gradient-warm: linear-gradient(135deg, #FF9933 0%, #FF6B6B 100%);
+    --gradient-subtle: linear-gradient(180deg, #111C44 0%, #0B1437 100%);
+    --gradient-hero: linear-gradient(135deg, rgba(0, 117, 255, 0.1) 0%, rgba(0, 224, 255, 0.05) 100%);
+
+    /* Premium Shadows & Glows */
+    --shadow-soft: 0 10px 40px -10px rgba(0, 117, 255, 0.3);
+    --shadow-card: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+    --shadow-elevated: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+
+    --sidebar-background: 228 60% 15%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 212 100% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 228 50% 20%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 228 40% 25%;
+    --sidebar-ring: 212 100% 50%;
+  }
+
+  /* Ensuring dark mode styles are consistent with our new root */
+  .dark {
+    --background: 228 66% 13%;
+    --foreground: 0 0% 100%;
+    --card: 228 60% 18%;
+    /* ... rest are inherited or same as root since root is now dark ... */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+}
+
+@layer utilities {
+  .gradient-calm {
+    background: var(--gradient-calm);
+  }
+  
+  .gradient-warm {
+    background: var(--gradient-warm);
+  }
+  
+  .gradient-subtle {
+    background: var(--gradient-subtle);
+  }
+  
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+
+  .shadow-elevated {
+    box-shadow: var(--shadow-elevated);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
