@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { apiFetch } from "@/lib/api";
+import { jwtDecode } from "jwt-decode"; // Correct named import for v4+
 
 export interface UserProfile {
     user_id?: string;
@@ -34,31 +35,40 @@ const defaultUser: UserProfile = {
     moodLogs: [],
 };
 
-// 🛡️ PRIVACY PROTECTION: Lifecycle ID
-// This ID must be updated on any significant code change.
-// If the stored ID doesn't match, the app forces a full logout.
-const APP_LIFECYCLE_ID = "BUILD_2026_02_01_02_45";
-
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [token, setToken] = useState<string | null>(localStorage.getItem("auth_token"));
+    const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
     const [user, setUser] = useState<UserProfile>(defaultUser);
 
-    // 1️⃣ INITIALIZATION: Forced Logout Check
+    // 1️⃣ INITIALIZATION & VALIDATION
     useEffect(() => {
-        const storedLifeId = localStorage.getItem("app_lifecycle_id");
+        // Load User
         const storedUser = localStorage.getItem("serenity-user");
-
-        if (storedLifeId !== APP_LIFECYCLE_ID) {
-            console.log("🔒 Privacy enforcement: App version mismatch. Clearing sensitive data.");
-            clearUser();
-            localStorage.setItem("app_lifecycle_id", APP_LIFECYCLE_ID);
-        } else if (storedUser) {
+        if (storedUser) {
             try {
                 setUser(JSON.parse(storedUser));
             } catch {
                 setUser(defaultUser);
+            }
+        }
+
+        // Validate Token
+        const storedToken = localStorage.getItem("token");
+        if (storedToken) {
+            try {
+                const decoded: any = jwtDecode(storedToken);
+                const currentTime = Date.now() / 1000;
+
+                if (decoded.exp && decoded.exp < currentTime) {
+                    console.warn("Token expired during initialization");
+                    clearUser();
+                } else {
+                    setToken(storedToken);
+                }
+            } catch (error) {
+                console.error("Invalid token format", error);
+                clearUser();
             }
         }
     }, []);
@@ -73,16 +83,16 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // ✅ Sync token to localStorage
     useEffect(() => {
         if (token) {
-            localStorage.setItem("auth_token", token);
+            localStorage.setItem("token", token);
         } else {
-            localStorage.removeItem("auth_token");
+            localStorage.removeItem("token");
         }
     }, [token]);
 
     const updateUser = (updates: Partial<UserProfile>, newToken?: string) => {
         setUser(prev => ({ ...prev, ...updates }));
         if (newToken) {
-            localStorage.setItem("auth_token", newToken);
+            localStorage.setItem("token", newToken);
             setToken(newToken);
         }
     };
@@ -91,7 +101,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(defaultUser);
         setToken(null);
         localStorage.removeItem("serenity-user");
-        localStorage.removeItem("auth_token");
+        localStorage.removeItem("token");
     };
 
     const saveToDatabase = async (userData: Partial<UserProfile>) => {

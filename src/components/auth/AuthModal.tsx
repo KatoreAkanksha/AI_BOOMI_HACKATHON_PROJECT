@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { GoogleLogin } from '@react-oauth/google';
+import { apiFetch } from "@/lib/api";
 
 export function AuthModal({ children }: { children: React.ReactNode }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -25,25 +26,18 @@ export function AuthModal({ children }: { children: React.ReactNode }) {
     const handleAuth = async () => {
         setIsLoading(true);
         try {
-            const url = authMode === 'login'
-                ? 'http://localhost:5001/api/auth/login'
-                : 'http://localhost:5001/api/auth/signup';
+            const endpoint = authMode === 'login'
+                ? '/api/auth/login'
+                : '/api/auth/signup';
 
             const body = authMode === 'login'
                 ? { email, password }
                 : { name, email, password };
 
-            const res = await fetch(url, {
+            const data = await apiFetch(endpoint, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
-            }).catch(() => {
-                throw new Error("Unable to connect to service. Please ensure the backend is running on port 5001.");
             });
-
-            const data = await res.json();
-
-            if (!res.ok) throw new Error(data.error || 'Authentication failed');
 
             // Success
             const userProfile = {
@@ -79,14 +73,10 @@ export function AuthModal({ children }: { children: React.ReactNode }) {
     const handleGoogleSuccess = async (credentialResponse: any) => {
         setIsLoading(true);
         try {
-            const res = await fetch('http://localhost:5001/api/auth/google', {
+            const data = await apiFetch('/api/auth/google', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ credential: credentialResponse.credential })
             });
-
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error || 'Google authentication failed');
 
             const userProfile = {
                 user_id: data.user.user_id,
@@ -173,17 +163,10 @@ export function AuthModal({ children }: { children: React.ReactNode }) {
         try {
             console.log('Sending Facebook token to backend...');
 
-            const res = await fetch('http://localhost:5001/api/auth/facebook', {
+            const data = await apiFetch('/api/auth/facebook', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ accessToken })
             });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                throw new Error(data.error || 'Facebook authentication failed');
-            }
 
             console.log('✅ Facebook auth successful:', data.user.name);
 

@@ -2,9 +2,9 @@ export const apiFetch = async (
     url: string,
     options: RequestInit = {}
 ) => {
-    const token = localStorage.getItem("auth_token");
+    const token = localStorage.getItem("token");
 
-    const apiBase = window.location.hostname === 'localhost' ? 'http://localhost:5001' : `http://${window.location.hostname}:5001`;
+    const apiBase = import.meta.env.VITE_API_URL || (window.location.hostname === 'localhost' ? 'http://localhost:5001' : '');
 
     const res = await fetch(`${apiBase}${url}`, {
         ...options,
@@ -17,7 +17,7 @@ export const apiFetch = async (
 
     // 🔴 AUTH FAILURE = HARD STOP & DATA PURGE
     if (res.status === 401 || res.status === 403) {
-        localStorage.removeItem("auth_token");
+        localStorage.removeItem("token");
         localStorage.removeItem("serenity-user");
         localStorage.removeItem("app_lifecycle_id"); // Force fresh lifecycle on next load
         window.location.href = "/"; // Instant clean redirect
