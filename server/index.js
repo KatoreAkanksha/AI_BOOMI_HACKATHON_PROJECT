@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const axios = require("axios");
 const crypto = require("crypto");
 const { OAuth2Client } = require('google-auth-library');
+const path = require("path");
 require("dotenv").config();
 
 // OAuth Clients
@@ -34,9 +35,12 @@ app.use(cors());
 app.use(express.json());
 
 /* ================= DATABASE ================= */
-const db = new sqlite3.Database("./users.db", (err) => {
+// WARNING: SQLite files are read-only in Vercel serverless environment.
+// Writes will not persist and may error. Consider using Turso, Neon, or Supabase.
+const dbPath = path.resolve(__dirname, "users.db");
+const db = new sqlite3.Database(dbPath, (err) => {
     if (err) console.error("DB Error:", err.message);
-    else console.log("✅ SQLite connected");
+    else console.log("✅ SQLite connected at", dbPath);
 });
 
 db.serialize(() => {
@@ -175,6 +179,10 @@ SCOPE AND BOUNDARIES:
 
 app.get("/", (req, res) => {
     res.json({ status: "Server is running" });
+});
+
+app.get("/api", (req, res) => {
+    res.json({ status: "API is running" });
 });
 
 // Auth
@@ -544,8 +552,15 @@ app.get('/api/chat/last-summary/:userId', authenticateToken, (req, res) => {
 
 app.use((req, res) => res.status(404).json({ error: "Route not found" }));
 
-// Bind to 0.0.0.0 for LAN access
-app.listen(PORT, "0.0.0.0", () => {
-    console.log(`✅ Server running on http://0.0.0.0:${PORT}`);
-    console.log(`🏠 Internal LAN: http://192.168.4.239:${PORT}`);
-});
+// Only run app.listen if NOT in Vercel environment (module exported)
+// In Vercel, this file is imported, so require.main !== module
+if (require.main === module) {
+    // Bind to 0.0.0.0 for LAN access
+    app.listen(PORT, "0.0.0.0", () => {
+        console.log(`✅ Server running on http://0.0.0.0:${PORT}`);
+        console.log(`🏠 Internal LAN: http://192.168.4.239:${PORT}`);
+    });
+}
+
+// Export app for Vercel
+module.exports = app;
